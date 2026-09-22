@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aurelia — Fine dining in shadow and gold. A culinary journey through light, flavour, and silence."
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta property="og:title" content="Aurelia — Fine Dining" />
+    <meta
+      property="og:description"
+      content="A culinary journey through light, flavour, and silence."
+    />
+    <meta property="og:type" content="website" />
+    <title>Aurelia — Fine Dining</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <script>
+      // Anti-FOUC theme bootstrap. Runs before first paint.
+      (function () {
+        try {
+          var t = localStorage.getItem('aurelia-theme');
+          if (t !== 'dark' && t !== 'light') {
+            t = window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+
+    <link rel="stylesheet" href="./styles.css?v=2" />
+  </head>
+  <body>
+    <!-- Static HTML structure. All data + interactions live in scripts.js -->
+
+    <!-- Intro curtain: monogram + line + pulsing dot, then lifts -->
+    <div id="intro-curtain" class="intro-curtain">
+      <div class="intro-monogram">A</div>
+      <div class="intro-line"></div>
+      <div class="intro-pulse"></div>
+    </div>
+
+    <!-- Scroll progress bar (fixed top) -->
+    <div class="scroll-progress" aria-hidden="true">
+      <div id="scroll-progress-bar" class="scroll-progress-bar"></div>
+    </div>
+
+    <!-- Ambient orb layer (decorative blurred gold orbs) -->
+    <div class="ambient-orb-layer" aria-hidden="true">
+      <div id="orb-1" class="ambient-orb ambient-orb--1"></div>
+      <div id="orb-2" class="ambient-orb ambient-orb--2"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="navbar">
+      <a href="#hero" class="navbar-brand" data-scroll="#hero">
+        <span class="navbar-brand-mark">A</span>
+        <span class="navbar-brand-text">Aurelia</span>
+      </a>
+
+      <div id="navbar-menu" class="navbar-menu">
+        <ul class="navbar-links">
+          <li><a href="#menu" data-trigger="menu">Menu</a></li>
+          <li><a href="#about" data-scroll="#about">About</a></li>
+          <li><a href="#gallery" data-scroll="#gallery">Gallery</a></li>
+          <li><a href="#contact" data-scroll="#contact">Contact</a></li>
+        </ul>
+
+        <div class="navbar-actions">
+          <button
+            id="theme-toggle"
+            type="button"
+            class="theme-toggle"
+            aria-label="Switch theme"
+            title="Switch theme"
+          >
+            <!-- Sun icon (shown in dark mode, click to switch to light) -->
+            <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" fill="currentColor" />
+              <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                <line x1="12" y1="2.5" x2="12" y2="5" />
+                <line x1="12" y1="19" x2="12" y2="21.5" />
+                <line x1="2.5" y1="12" x2="5" y2="12" />
+                <line x1="19" y1="12" x2="21.5" y2="12" />
+                <line x1="5.2" y1="5.2" x2="6.9" y2="6.9" />
+                <line x1="17.1" y1="17.1" x2="18.8" y2="18.8" />
+                <line x1="5.2" y1="18.8" x2="6.9" y2="17.1" />
+                <line x1="17.1" y1="5.2" x2="18.8" y2="6.9" />
+              </g>
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path
+                d="M 20 14.5 A 8 8 0 1 1 9.5 4 A 6.5 6.5 0 0 0 20 14.5 Z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+
+          <a href="#reservations" class="navbar-cta" data-trigger="reserve">Reserve</a>
+        </div>
+      </div>
+
+      <button
+        id="navbar-burger"
+        type="button"
+        class="navbar-burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="navbar-menu"
+      >
+        <svg class="navbar-burger-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6" class="bar bar-top" />
+          <line x1="3" y1="12" x2="21" y2="12" class="bar bar-mid" />
+          <line x1="3" y1="18" x2="21" y2="18" class="bar bar-bot" />
+        </svg>
+      </button>
+    </nav>
+    <div id="navbar-backdrop" class="navbar-backdrop"></div>
+
+    <main>
+      <!-- ─── HERO ─────────────────────────────────────────────────── -->
+      <section id="hero" class="hero">
+        <div id="hero-canvas-wrap" class="canvas-wrap"></div>
+        <div class="hero-overlay"></div>
+        <canvas id="gold-particles" class="gold-particles"></canvas>
+
+        <!-- Animated light ribbon under title -->
+        <svg
+          class="light-ribbon"
+          viewBox="0 0 1200 80"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="ribbonGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#c9a961" stop-opacity="0" />
+              <stop offset="30%" stop-color="#e6cfa3" stop-opacity="0.8" />
+              <stop offset="50%" stop-color="#fff4d6" stop-opacity="1" />
+              <stop offset="70%" stop-color="#e6cfa3" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#c9a961" stop-opacity="0" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path
+            d="M 0 40 Q 300 10 600 40 T 1200 40"
+            fill="none"
+            stroke="url(#ribbonGrad)"
+            stroke-width="1.5"
+            filter="url(#glow)"
+          >
+            <animate
+              attributeName="d"
+              dur="8s"
+              repeatCount="indefinite"
+              values="
+                M 0 40 Q 300 10 600 40 T 1200 40;
+                M 0 40 Q 300 70 600 40 T 1200 40;
+                M 0 40 Q 300 10 600 40 T 1200 40"
+            />
+          </path>
+          <path
+            d="M 0 40 Q 300 10 600 40 T 1200 40"
+            fill="none"
+            stroke="url(#ribbonGrad)"
+            stroke-width="0.6"
+            opacity="0.5"
+            filter="url(#glow)"
+          >
+            <animate
+              attributeName="d"
+              dur="11s"
+              repeatCount="indefinite"
+              values="
+                M 0 40 Q 300 70 600 40 T 1200 40;
+                M 0 40 Q 300 10 600 40 T 1200 40;
+                M 0 40 Q 300 70 600 40 T 1200 40"
+            />
+          </path>
+        </svg>
+
+        <div class="hero-content">
+          <span class="hero-eyebrow">— Est. 1998 —</span>
+          <h1 class="hero-title">Aurelia</h1>
+          <p class="hero-tagline">A culinary journey through light &amp; shadow.</p>
+          <div class="hero-cta">
+            <a href="#reservations" class="btn" data-trigger="reserve">Reserve a Table</a>
+            <a href="#menu" class="btn btn-ghost" data-trigger="menu">Explore the Menu</a>
+          </div>
+        </div>
+
+        <div class="hero-scroll-hint">
+          <span>Scroll</span>
+          <div class="hero-scroll-line"></div>
+        </div>
+      </section>
+
+      <!-- ─── ABOUT ────────────────────────────────────────────────── -->
+      <section id="about" class="section about-section">
+        <div class="reveal about-inner">
+          <div class="about-text">
+            <span class="section-eyebrow">— Our Story —</span>
+            <h2 class="section-heading">A Quiet Obsession</h2>
+            <div class="section-divider"></div>
+            <p>
+              Aurelia began in 1998 as a small twelve-seat room above a bookshop
+              in Florence. Three decades later, our discipline remains the same:
+              source with patience, cook with restraint, serve with silence.
+            </p>
+            <p>
+              Chef Aurelia Marchetti trained under the last of the great Tuscan
+              <em>cucina povera</em> masters before opening her own kitchen. Her
+              cooking is a study in shadow and gold — dishes that whisper rather
+              than shout, ingredients that arrive at the table as they were found.
+            </p>
+            <p>
+              Today, the dining room holds thirty-eight covers. Each evening, we
+              serve a single tasting menu, paired by our cellar master, and lit
+              only by candlelight.
+            </p>
+          </div>
+
+          <div class="about-figure">
+            <div class="about-frame">
+              <svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#e6cfa3" />
+                    <stop offset="100%" stop-color="#8a7340" />
+                  </linearGradient>
+                </defs>
+                <rect x="6" y="6" width="188" height="268" fill="none" stroke="url(#goldGrad)" stroke-width="1" />
+                <rect x="14" y="14" width="172" height="252" fill="none" stroke="url(#goldGrad)" stroke-width="0.4" opacity="0.5" />
+                <g transform="translate(100,140)">
+                  <ellipse cx="0" cy="80" rx="40" ry="6" fill="#c9a961" opacity="0.4">
+                    <animate attributeName="rx" values="40;46;40" dur="3.4s" repeatCount="indefinite" />
+                  </ellipse>
+                  <rect x="-7" y="-30" width="14" height="110" fill="#1a0f08" />
+                  <rect x="-9" y="-32" width="18" height="6" fill="#c9a961" opacity="0.7" />
+                  <path d="M0,-80 Q-8,-50 -3,-30 L3,-30 Q8,-50 0,-80 Z" fill="url(#goldGrad)" opacity="0.9">
+                    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.6s" repeatCount="indefinite" />
+                    <animate
+                      attributeName="d"
+                      dur="2.2s"
+                      repeatCount="indefinite"
+                      values="M0,-80 Q-8,-50 -3,-30 L3,-30 Q8,-50 0,-80 Z;
+                              M0,-82 Q-10,-52 -3,-30 L3,-30 Q9,-50 0,-82 Z;
+                              M0,-80 Q-8,-50 -3,-30 L3,-30 Q8,-50 0,-80 Z"
+                    />
+                  </path>
+                  <circle cx="0" cy="-55" r="22" fill="url(#goldGrad)" opacity="0.18">
+                    <animate attributeName="r" values="22;30;22" dur="2.6s" repeatCount="indefinite" />
+                  </circle>
+                </g>
+                <text x="100" y="262" text-anchor="middle" fill="#c9a961" font-family="serif" font-style="italic" font-size="11" letter-spacing="3">
+                  A · M
+                </text>
+              </svg>
+            </div>
+            <div class="about-quote">
+              <p>"Cooking is the art of leaving something out."</p>
+              <span>— Aurelia Marchetti, Chef-Owner</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── MENU ─────────────────────────────────────────────────── -->
+      <section id="menu" class="section menu-section">
+        <div class="reveal">
+          <div class="menu-header">
+            <span class="section-eyebrow">— The Menu —</span>
+            <h2 class="section-heading">Seasonal Offerings</h2>
+            <div class="section-divider"></div>
+            <p class="menu-intro">
+              Each dish is composed from ingredients sourced within a morning's
+              drive — vine-ripened, ocean-caught, hand-raised. The menu changes
+              with the harvest.
+            </p>
+          </div>
+
+          <div id="menu-grid" class="menu-grid">
+            <!-- Populated from JS data -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── GALLERY ──────────────────────────────────────────────── -->
+      <section id="gallery" class="section gallery-section">
+        <div class="reveal">
+          <div class="gallery-header">
+            <span class="section-eyebrow">— Gallery —</span>
+            <h2 class="section-heading">Moments in Shadow</h2>
+            <div class="section-divider"></div>
+            <p class="gallery-hint">Hover a frame to bring it to life.</p>
+          </div>
+
+          <div id="gallery-grid" class="gallery-grid">
+            <!-- Populated from JS data -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── RESERVATIONS ─────────────────────────────────────────── -->
+      <section id="reservations" class="section reservations-section">
+        <div class="reveal reservations-inner">
+          <div class="reservations-copy">
+            <span class="section-eyebrow">— Reservations —</span>
+            <h2 class="section-heading">Secure Your Evening</h2>
+            <div class="section-divider"></div>
+            <p>
+              Tables are released 60 days in advance. For parties larger than eight,
+              or to reserve the Chef's Counter, please contact us directly.
+            </p>
+            <div class="reservations-contact">
+              <div>
+                <span class="rc-label">Phone</span>
+                <span class="rc-value">+1 (212) 555-0147</span>
+              </div>
+              <div>
+                <span class="rc-label">Email</span>
+                <span class="rc-value">concierge@aurelia.com</span>
+              </div>
+              <div>
+                <span class="rc-label">Hours</span>
+                <span class="rc-value">Tue–Sat · 6pm – 11pm</span>
+              </div>
+            </div>
+          </div>
+
+          <form id="reserve-form" class="reservations-form">
+            <h3>Request a Table</h3>
+
+            <div class="form-row">
+              <label>
+                <span>Name</span>
+                <input type="text" name="name" autocomplete="name" required placeholder="Your full name" />
+              </label>
+              <label>
+                <span>Email</span>
+                <input type="email" name="email" autocomplete="email" required placeholder="you@email.com" />
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                <span>Date</span>
+                <input type="date" name="date" autocomplete="off" required />
+              </label>
+              <label>
+                <span>Time</span>
+                <select name="time">
+                  <option value="18:00">18:00</option>
+                  <option value="18:30">18:30</option>
+                  <option value="19:00" selected>19:00</option>
+                  <option value="19:30">19:30</option>
+                  <option value="20:00">20:00</option>
+                  <option value="20:30">20:30</option>
+                  <option value="21:00">21:00</option>
+                  <option value="21:30">21:30</option>
+                </select>
+              </label>
+              <label>
+                <span>Guests</span>
+                <select name="party">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="form-full">
+              <span>Special Requests</span>
+              <textarea
+                name="requests"
+                autocomplete="off"
+                rows="3"
+                placeholder="Allergies, occasions, seating preferences…"
+              ></textarea>
+            </label>
+
+            <button type="submit" class="btn form-submit">
+              <span class="btn-label">Confirm Reservation</span>
+            </button>
+
+            <p id="form-success" class="form-success" hidden></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- ─── CONTACT ──────────────────────────────────────────────── -->
+      <section id="contact" class="section contact-section">
+        <div class="reveal">
+          <div class="contact-header">
+            <span class="section-eyebrow">— Visit —</span>
+            <h2 class="section-heading">Find Us</h2>
+            <div class="section-divider"></div>
+          </div>
+
+          <div class="contact-inner">
+            <div class="contact-info">
+              <div class="contact-block">
+                <h3>Address</h3>
+                <p>
+                  14 Via dei Silenzi<br />
+                  Florence, Italy 50125
+                </p>
+              </div>
+              <div class="contact-block">
+                <h3>Hours</h3>
+                <p>
+                  Tuesday – Saturday<br />
+                  18:00 – 23:00
+                </p>
+                <p class="muted">Closed Sunday &amp; Monday</p>
+              </div>
+              <div class="contact-block">
+                <h3>Reach Us</h3>
+                <p>
+                  <a href="tel:+390550000000">+39 055 000 0000</a><br />
+                  <a href="mailto:concierge@aurelia.com">concierge@aurelia.com</a>
+                </p>
+              </div>
+              <div class="contact-block">
+                <h3>Private Events</h3>
+                <p>
+                  The Cellar &amp; the Chef's Counter are available for private
+                  dining. Inquire by email.
+                </p>
+              </div>
+            </div>
+
+            <div class="contact-map">
+              <div class="map-frame">
+                <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Map illustration">
+                  <defs>
+                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c9a961" stroke-width="0.3" opacity="0.3" />
+                    </pattern>
+                  </defs>
+                  <rect width="400" height="300" fill="#0c0c0c" />
+                  <rect width="400" height="300" fill="url(#grid)" />
+                  <path d="M 0 120 Q 200 100 400 140" stroke="#c9a961" stroke-width="2" fill="none" opacity="0.6" />
+                  <path d="M 180 0 Q 200 150 160 300" stroke="#c9a961" stroke-width="2" fill="none" opacity="0.6" />
+                  <path d="M 0 220 L 400 200" stroke="#c9a961" stroke-width="1" fill="none" opacity="0.3" />
+                  <path d="M 0 240 Q 100 260 200 240 T 400 260" stroke="#5a7a8a" stroke-width="6" fill="none" opacity="0.7" />
+                  <g transform="translate(200,140)">
+                    <circle r="22" fill="rgba(201,169,97,0.15)">
+                      <animate attributeName="r" values="14;28;14" dur="2.4s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.8;0;0.8" dur="2.4s" repeatCount="indefinite" />
+                    </circle>
+                    <circle r="6" fill="#c9a961" />
+                    <circle r="3" fill="#0a0a0a" />
+                  </g>
+                  <text x="200" y="190" text-anchor="middle" fill="#c9a961" font-family="serif" font-style="italic" font-size="14">
+                    Aurelia
+                  </text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ─── FOOTER ──────────────────────────────────────────────────── -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-mark">A</span>
+          <span class="footer-name">Aurelia</span>
+        </div>
+
+        <div class="footer-credits">
+          <p>Florence · Est. 1998</p>
+          <p class="muted">A culinary journey through light &amp; shadow.</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="#menu" data-trigger="menu">Menu</a>
+          <a href="#reservations" data-trigger="reserve">Reservations</a>
+          <a href="#contact" data-scroll="#contact">Contact</a>
+        </div>
+
+        <div class="footer-copy">
+          <p>© <span id="footer-year"></span> Aurelia. All rights reserved.</p>
+          <p class="footer-creator">
+            Designed &amp; built by
+            <span class="footer-creator-name">Aosaf Ahbab Rayeed</span>
+            <span class="footer-creator-sep"> · </span>
+            <span class="footer-creator-dept">EEE, BUET</span>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Overlay containers (populated dynamically by scripts.js) -->
+    <div id="menu-intro" class="menu-intro-overlay" hidden></div>
+    <div id="reserve-intro" class="intro-overlay" hidden></div>
+
+    <!-- Three.js (non-module global build) + custom script.
+         Plain <script> tags so the page also works when opened via file://.
+         NOTE: r150 is the last release with a global UMD build (three.min.js).
+         r160+ removed it; we pin r150 to keep the global available. -->
+    <script src="https://unpkg.com/three@0.150.0/build/three.min.js"></script>
+    <script src="./scripts.js?v=4"></script>
+  </body>
+</html>

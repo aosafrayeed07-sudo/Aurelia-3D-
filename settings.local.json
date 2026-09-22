@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /g/\"Math  Solver\")",
+      "Bash(pip list:*)",
+      "Bash(find . -type d -iname *disaster*watch*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/)",
+      "Bash(start:*)"
+    ]
+  }
+}
