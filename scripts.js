@@ -285,13 +285,12 @@ function setupNavbar() {
     });
   });
 
-  // Close menu when any link inside the menu is tapped (covers data-trigger
-  // overlays and data-scroll links alike — keeps mobile UX tight).
-  navbarMenuEl?.addEventListener('click', (e) => {
-    const link = e.target.closest('a, button');
-    if (link && navbar.classList.contains('navbar--open')) {
-      setOpen(false);
-    }
+  // Close menu when any link inside the menu is tapped (data-trigger links
+  // handle their own sequencing so the overlay animation follows the close).
+  navbarMenuEl?.querySelectorAll('a, button')?.forEach((el) => {
+    if (el.id === 'navbar-burger') return;
+    if (el.hasAttribute('data-trigger')) return;
+    el.addEventListener('click', () => setOpen(false));
   });
 }
 
@@ -1814,15 +1813,39 @@ function setupTriggers() {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const which = el.getAttribute('data-trigger');
-      try {
-        if (which === 'reserve') showReserveIntro();
-        else if (which === 'menu') showMenuIntro();
-      } catch (err) {
-        console.error('[Aurelia] Overlay failed:', err);
-        // Last-ditch: hide the overlay and scroll to the target section
-        const fallback = which === 'reserve' ? 'reservations' : 'menu';
-        document.querySelectorAll('.intro-overlay, .menu-intro-overlay').forEach((o) => { o.hidden = true; o.innerHTML = ''; });
-        document.getElementById(fallback)?.scrollIntoView({ behavior: 'smooth' });
+      // If the mobile navbar is open, close it first so it doesn't sit on top
+      // of the overlay animation when it starts.
+      const navbar = document.getElementById('navbar');
+      const wasOpen = navbar?.classList.contains('navbar--open');
+      const closeMenu = () => {
+        navbar?.classList.remove('navbar--open');
+        const burger = document.getElementById('navbar-burger');
+        const icon = burger?.querySelector('.navbar-burger-icon');
+        icon?.classList.remove('is-open');
+        if (burger) {
+          burger.setAttribute('aria-expanded', 'false');
+          burger.setAttribute('aria-label', 'Open menu');
+        }
+      };
+      const startOverlay = () => {
+        try {
+          if (which === 'reserve') showReserveIntro();
+          else if (which === 'menu') showMenuIntro();
+        } catch (err) {
+          console.error('[Aurelia] Overlay failed:', err);
+          // Last-ditch: hide the overlay and scroll to the target section
+          const fallback = which === 'reserve' ? 'reservations' : 'menu';
+          document.querySelectorAll('.intro-overlay, .menu-intro-overlay').forEach((o) => { o.hidden = true; o.innerHTML = ''; });
+          document.getElementById(fallback)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+      if (wasOpen) {
+        closeMenu();
+        // Defer overlay start by one frame so the navbar visually closes
+        // (display:none collapse) before the overlay animates in.
+        requestAnimationFrame(() => requestAnimationFrame(startOverlay));
+      } else {
+        startOverlay();
       }
     });
   });
