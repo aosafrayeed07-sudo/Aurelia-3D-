@@ -213,12 +213,12 @@ const COURSE_ICON_SVG = {
 
 // Gallery images (poster + hover-to-play video).
 const GALLERY_IMAGES = [
-  { caption: 'The Dining Room',     poster: 'posters/dining.jpg',   video: 'https://assets.mixkit.co/videos/32457/32457-720.mp4' },
-  { caption: 'Truffle Pasta',       poster: 'posters/pasta.jpg',    video: 'https://assets.mixkit.co/videos/2432/2432-720.mp4'   },
-  { caption: 'The Cellar',          poster: 'posters/cellar.jpg',   video: 'https://assets.mixkit.co/videos/52407/52407-720.mp4' },
-  { caption: 'Starters',            poster: 'posters/starters.jpg', video: 'https://assets.mixkit.co/videos/13258/13258-720.mp4' },
-  { caption: 'The Pass',            poster: 'posters/pass.jpg',     video: 'https://assets.mixkit.co/videos/15875/15875-720.mp4' },
-  { caption: 'Orange-Glazed Duck',  poster: 'posters/duck.jpg',     video: 'https://assets.mixkit.co/videos/3806/3806-720.mp4'   },
+  { caption: 'The Dining Room',     poster: 'dining.jpg',   video: 'https://assets.mixkit.co/videos/32457/32457-720.mp4' },
+  { caption: 'Truffle Pasta',       poster: 'pasta.jpg',    video: 'https://assets.mixkit.co/videos/2432/2432-720.mp4'   },
+  { caption: 'The Cellar',          poster: 'cellar.jpg',   video: 'https://assets.mixkit.co/videos/52407/52407-720.mp4' },
+  { caption: 'Starters',            poster: 'starters.jpg', video: 'https://assets.mixkit.co/videos/13258/13258-720.mp4' },
+  { caption: 'The Pass',            poster: 'pass.jpg',     video: 'https://assets.mixkit.co/videos/15875/15875-720.mp4' },
+  { caption: 'Orange-Glazed Duck',  poster: 'duck.jpg',     video: 'https://assets.mixkit.co/videos/3806/3806-720.mp4'   },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -1624,8 +1624,9 @@ function showMenuIntro() {
     <div class="menu-intro-vignette"></div>
     <div class="menu-intro-canvas-layer" id="menu-intro-canvas"></div>
     <div class="menu-intro-text">
-      <div class="menu-intro-eyebrow">— Explore —</div>
-      <h1 class="menu-intro-title" id="menu-intro-title">Tonight</h1>
+      <div class="menu-intro-eyebrow">— The Menu —</div>
+      <h1 class="menu-intro-title" id="menu-intro-title">Aurelia</h1>
+      <p class="menu-intro-tagline">A culinary journey through light &amp; shadow.</p>
       <div class="menu-intro-line"></div>
     </div>
     <button class="menu-intro-skip" id="menu-intro-skip" aria-label="Skip">Skip</button>
@@ -1727,14 +1728,6 @@ function showMenuIntro() {
   tableGroup.add(glass);
 
   // Titles
-  const TITLES = [
-    { start: 0,   end: 1.4, text: 'Tonight' },
-    { start: 1.4, end: 3.0, text: 'Starters & Pasta' },
-    { start: 3.0, end: 4.4, text: 'Main Course' },
-    { start: 4.4, end: 5.4, text: 'Dessert' },
-    { start: 5.4, end: 5.8, text: 'The Menu' },
-  ];
-  const titleEl = root.querySelector('#menu-intro-title');
   let raf = 0;
   let elapsed = 0;
   let lastT = performance.now();
@@ -1756,16 +1749,6 @@ function showMenuIntro() {
     });
 
     candle.userData.tick?.(elapsed);
-
-    // Update title based on elapsed
-    const current = TITLES.find((t) => elapsed >= t.start && elapsed < t.end) || TITLES[TITLES.length - 1];
-    if (titleEl && titleEl.textContent !== current.text) {
-      titleEl.textContent = current.text;
-      // Replay entrance animation
-      titleEl.style.animation = 'none';
-      void titleEl.offsetWidth; // reflow
-      titleEl.style.animation = '';
-    }
 
     renderer.render(scene, camera);
     raf = requestAnimationFrame(tick);
