@@ -242,6 +242,7 @@ function setupNavbar() {
   const navbar = document.getElementById('navbar');
   const burger = document.getElementById('navbar-burger');
   const backdrop = document.getElementById('navbar-backdrop');
+  const navbarMenuEl = document.getElementById('navbar-menu');
   const icon = burger?.querySelector('.navbar-burger-icon');
 
   const setScrolled = () => {
@@ -282,6 +283,15 @@ function setupNavbar() {
       setOpen(false);
       document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
     });
+  });
+
+  // Close menu when any link inside the menu is tapped (covers data-trigger
+  // overlays and data-scroll links alike — keeps mobile UX tight).
+  navbarMenuEl?.addEventListener('click', (e) => {
+    const link = e.target.closest('a, button');
+    if (link && navbar.classList.contains('navbar--open')) {
+      setOpen(false);
+    }
   });
 }
 
