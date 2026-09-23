@@ -168,8 +168,10 @@ body {
   transition: background 0.45s ease, color 0.45s ease;
 }
 
-a { color: var(--gold-soft); text-decoration: none; transition: color 0.25s ease; }
+a { color: var(--gold-soft); text-decoration: none; transition: color 0.25s ease; } 
 a:hover { color: var(--gold); }
+
+
 
 h1, h2, h3, h4 {
   font-family: var(--serif);
@@ -239,13 +241,21 @@ img { max-width: 100%; display: block; }
 }
 .btn:hover { background: var(--gold); color: var(--bg); letter-spacing: 0.32em; }
 .btn-ghost { border: 1px solid var(--border); color: var(--text-muted); }
-.btn-ghost:hover { border-color: var(--gold); color: var(--gold-soft); background: transparent; }
+.btn-ghost:hover,
+.btn.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  letter-spacing: 0.32em;
+  box-shadow: 0 0 0 1px var(--gold) inset,
+              0 0 28px -4px color-mix(in srgb, var(--gold) 55%, transparent);
+}
 
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1.1s ease, transform 1.1s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
 .canvas-wrap { position: absolute; inset: 0; z-index: 0; }
-.canvas-wrap canvas { display: block; }
+.canvas-wrap canvas { display: block; pointer-events: none; touch-action: pan-y; }
 
 ::selection { background: var(--gold); color: var(--bg); }
 
@@ -332,12 +342,17 @@ img { max-width: 100%; display: block; }
 }
 .navbar-burger:hover { background: var(--gold); color: var(--bg); }
 .navbar-burger:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--gold); }
-.navbar-burger-icon { overflow: visible; }
-.navbar-burger-icon .bar { stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; transform-origin: center; transition: transform 0.3s ease, opacity 0.3s ease; }
+.navbar-burger-icon { overflow: visible; pointer-events: none; }
+.navbar-burger-icon .bar { stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; transform-origin: center; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
 .navbar-burger-icon.is-open .bar-top { transform: translateY(6px) rotate(45deg); }
 .navbar-burger-icon.is-open .bar-mid { opacity: 0; transform: scaleX(0); }
 .navbar-burger-icon.is-open .bar-bot { transform: translateY(-6px) rotate(-45deg); }
 .navbar-backdrop { display: none; }
+
+/* Defensive: kill touch-event capture from any intro overlay that might linger */
+.intro-overlay { pointer-events: auto; }
+.intro-overlay[hidden] { display: none !important; }
+.intro-curtain--done { display: none; pointer-events: none; }
 
 @media (max-width: 900px) {
   .navbar { padding: 1rem 1.4rem; }
