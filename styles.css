@@ -358,11 +358,6 @@ img { max-width: 100%; display: block; }
   .navbar { padding: 1rem 1.4rem; }
   .navbar--scrolled { padding: 0.8rem 1.4rem; }
   .navbar-burger { display: inline-flex; }
-  .navbar-backdrop {
-    display: block; position: fixed; inset: 0; top: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 99;
-    animation: navbarFadeIn 0.3s ease;
   .navbar-menu {
     position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; align-items: stretch; gap: 0;
@@ -384,9 +379,13 @@ img { max-width: 100%; display: block; }
   .navbar-links a { display: block; padding: 1rem 0.4rem; font-size: 0.85rem; }
   .navbar-actions { justify-content: space-between; gap: 0.6rem; }
   .navbar-backdrop {
-    display: block; position: fixed; inset: 0; top: 0;
+    display: none;
+    position: fixed; inset: 0; top: 0;
     background: rgba(0, 0, 0, 0.45);
     z-index: 99;
+  }
+  .navbar--open .navbar-backdrop {
+    display: block;
     animation: navbarFadeIn 0.3s ease;
   }
   @keyframes navbarFadeIn { from { opacity: 0; } to { opacity: 1; } }
