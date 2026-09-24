@@ -295,7 +295,46 @@ function setupNavbar() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* 5. SCROLL PROGRESS                                                         */
+/* 5. HERO TITLE — dynamic letter reveal + cursor-tracking glow               */
+/* ─────────────────────────────────────────────────────────────────────────── */
+function setupHeroTitle() {
+  const title = document.querySelector('.hero-title');
+  const textEl = title?.querySelector('.hero-title-text');
+  if (!title || !textEl) return;
+
+  // Split the word into per-letter spans for staggered reveal.
+  const raw = textEl.textContent;
+  textEl.setAttribute('aria-hidden', 'true');
+  textEl.innerHTML = raw.split('').map((ch) => {
+    if (ch === ' ') return '<span class="ch ch-space">&nbsp;</span>';
+    return `<span class="ch">${ch}</span>`;
+  }).join('');
+
+  // Add a single .is-hot class to start the mouse-tracking glow.
+  title.classList.add('is-hot');
+
+  // Track mouse position relative to the title so the radial gradient follows.
+  let rafId = 0;
+  const onMove = (e) => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      const rect = title.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      title.style.setProperty('--mx', `${x}%`);
+      title.style.setProperty('--my', `${y}%`);
+      rafId = 0;
+    });
+  };
+  title.addEventListener('mousemove', onMove);
+  title.addEventListener('mouseleave', () => {
+    title.style.setProperty('--mx', '50%');
+    title.style.setProperty('--my', '50%');
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* 6. SCROLL PROGRESS                                                         */
 /* ─────────────────────────────────────────────────────────────────────────── */
 function setupScrollProgress() {
   const bar = document.getElementById('scroll-progress-bar');
@@ -1879,6 +1918,7 @@ setupBrightModeTyping();
 setupTriggers();
 setupIntroCurtain();
 setupNavbar();
+setupHeroTitle();
 setupScrollProgress();
 setupAmbientOrbs();
 setupGoldParticles();
