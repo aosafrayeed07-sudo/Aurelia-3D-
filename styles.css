@@ -635,12 +635,7 @@ img { max-width: 100%; display: block; }
   text-align: center; padding: 0 1.4rem;
 }
 .hero-content h1 {
-  /* gentle animated halo behind the gold letters */
-  animation: titleGlow 5s 2s ease-in-out infinite;
-}
-@keyframes titleGlow {
-  0%, 100% { filter: drop-shadow(0 0 18px rgba(201, 169, 97, 0.18)) drop-shadow(0 8px 40px rgba(0,0,0,0.6)); }
-  50%      { filter: drop-shadow(0 0 38px rgba(230, 207, 163, 0.42)) drop-shadow(0 8px 40px rgba(0,0,0,0.6)); }
+  /* No-op: glow on individual letters is handled by their own gradient + text-shadow. */
 }
 .hero-eyebrow {
   font-family: var(--sans); font-size: 0.8rem;
@@ -650,18 +645,22 @@ img { max-width: 100%; display: block; }
 }
 .hero-title {
   font-family: var(--serif); font-style: italic; font-weight: 500;
-  font-size: clamp(4.5rem, 13vw, 11rem);
+  /* Fluid scale: small on phones, large on desktop.
+     Lower bound is 2.6rem so small phones don't get a clipped title. */
+  font-size: clamp(2.6rem, 13vw, 11rem);
   color: var(--gold-soft); letter-spacing: 0.04em;
   line-height: 0.95;
   position: relative;
   display: inline-block;
+  white-space: nowrap;
 }
 .hero-title-text {
   display: inline-block;
   text-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  animation: fadeUp 1.4s 0.5s ease both;
+  white-space: nowrap;
 }
-/* Cursor-tracking glow that follows the mouse */
+
+/* Cursor-tracking glow — disabled on touch devices to save GPU cycles */
 .hero-title::before {
   content: '';
   position: absolute;
@@ -680,14 +679,12 @@ img { max-width: 100%; display: block; }
   opacity: 1;
 }
 
-/* Letter-by-letter reveal — each letter is wrapped in a span by JS.
-   Combines:
-     • Gold gradient + traveling shimmer
-     • Entry: drop + rotate + scale with overshoot
-     • Continuous breathing (subtle scale/rotate sway)
-     • Stagger across letters for a wave arrival */
+/* Letter spans — single short entry + per-letter gold gradient + shimmer.
+   Grouped onto one selector so transform/animation don't fight each other. */
 .hero-title-text .ch {
   display: inline-block;
+  /* Reset inherited transparent fill, then apply gradient on the letter */
+  -webkit-text-fill-color: transparent;
   background-image: linear-gradient(
     100deg,
     var(--gold-soft) 0%,
@@ -701,60 +698,40 @@ img { max-width: 100%; display: block; }
   background-position: 0% 50%;
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
   opacity: 0;
-  transform: translateY(1.1em) rotate(8deg) scale(0.85);
+  transform: translateY(0.9em);
   animation:
-    chIn     1.2s cubic-bezier(.22,.9,.18,1) both,
-    chBreath 4s ease-in-out infinite,
-    titleShimmer 4s ease-in-out infinite;
-  transition: transform 0.4s cubic-bezier(.2,.7,.2,1), -webkit-text-fill-color 0.4s ease;
-  will-change: transform, opacity, background-position;
+    chIn         0.85s cubic-bezier(.22,.9,.18,1) both,
+    titleShimmer 5s ease-in-out infinite;
 }
-.hero-title-text .ch:nth-child(1) { animation-delay: 0.10s, 2.0s, 2.6s; }
-.hero-title-text .ch:nth-child(2) { animation-delay: 0.22s, 2.1s, 2.7s; }
-.hero-title-text .ch:nth-child(3) { animation-delay: 0.34s, 2.2s, 2.8s; }
-.hero-title-text .ch:nth-child(4) { animation-delay: 0.46s, 2.3s, 2.9s; }
-.hero-title-text .ch:nth-child(5) { animation-delay: 0.58s, 2.4s, 3.0s; }
-.hero-title-text .ch:nth-child(6) { animation-delay: 0.70s, 2.5s, 3.1s; }
-.hero-title-text .ch:nth-child(7) { animation-delay: 0.82s, 2.6s, 3.2s; }
+.hero-title-text .ch:nth-child(1) { animation-delay: 0.10s, 2.0s; }
+.hero-title-text .ch:nth-child(2) { animation-delay: 0.22s, 2.1s; }
+.hero-title-text .ch:nth-child(3) { animation-delay: 0.34s, 2.2s; }
+.hero-title-text .ch:nth-child(4) { animation-delay: 0.46s, 2.3s; }
+.hero-title-text .ch:nth-child(5) { animation-delay: 0.58s, 2.4s; }
+.hero-title-text .ch:nth-child(6) { animation-delay: 0.70s, 2.5s; }
+.hero-title-text .ch:nth-child(7) { animation-delay: 0.82s, 2.6s; }
 
 @keyframes chIn {
-  0%   { opacity: 0; transform: translateY(1.1em) rotate(8deg) scale(0.85); filter: blur(10px); }
-  40%  { opacity: 1; filter: blur(0); }
-  70%  { transform: translateY(-0.08em) rotate(-2deg) scale(1.04); }
-  100% { opacity: 1; transform: translateY(0)     rotate(0deg)  scale(1);    filter: blur(0); }
-}
-
-/* Continuous subtle "breathing" + delicate sway so the title never feels static */
-@keyframes chBreath {
-  0%, 100% { transform: translateY(0) rotate(0deg)   scale(1); }
-  50%      { transform: translateY(-0.04em) rotate(0.6deg) scale(1.012); }
+  0%   { opacity: 0; transform: translateY(0.9em); }
+  60%  { opacity: 1; }
+  80%  { transform: translateY(-0.05em); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Travel the gold shimmer across the gradient */
 @keyframes titleShimmer {
-  0%   { background-position: 0%   50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0%   50%; }
+  0%, 100% { background-position: 0%   50%; }
+  50%      { background-position: 100% 50%; }
 }
 
-/* Hover a letter → ripples the row (neighbors tilt opposite ways) */
-.hero-title-text .ch:hover {
-  transform: translateY(-0.22em) rotate(-4deg) scale(1.06);
-  -webkit-text-fill-color: #fff4d6;
-  animation: chHoverPulse 0.6s ease-out;
-}
-.hero-title-text .ch:hover + .ch {
-  transform: translateY(0.06em) rotate(3deg);
-}
-.hero-title-text .ch:has(+ .ch:hover) {
-  transform: translateY(0.06em) rotate(-3deg);
-}
-@keyframes chHoverPulse {
-  0%   { transform: translateY(0)   rotate(0deg) scale(1); }
-  40%  { transform: translateY(-0.28em) rotate(-6deg) scale(1.1); }
-  100% { transform: translateY(-0.22em) rotate(-4deg) scale(1.06); }
+/* Tilt a single letter on hover (desktop only — cheap, no perpetual loop) */
+@media (hover: hover) {
+  .hero-title-text .ch:hover {
+    transform: translateY(-0.18em) rotate(-4deg);
+    -webkit-text-fill-color: #fff4d6;
+    background-image: none;
+  }
 }
 .hero-tagline {
   margin-top: 1.4rem; font-family: var(--serif);
