@@ -661,30 +661,6 @@ img { max-width: 100%; display: block; }
   text-shadow: 0 8px 40px rgba(0,0,0,0.6);
   animation: fadeUp 1.4s 0.5s ease both;
 }
-/* Apply the gold gradient on each individual letter so the shimmer travels
-   across the word and each letter inherits it correctly. */
-.hero-title-text .ch {
-  background-image: linear-gradient(
-    100deg,
-    var(--gold-soft) 0%,
-    var(--gold-soft) 30%,
-    #fff4d6 48%,
-    #ffe9a8 52%,
-    var(--gold-soft) 70%,
-    var(--gold-soft) 100%
-  );
-  background-size: 260% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: titleShimmer 4s 2.5s ease-in-out infinite;
-}
-@keyframes titleShimmer {
-  0%   { background-position: 0%   50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0%   50%; }
-}
 /* Cursor-tracking glow that follows the mouse */
 .hero-title::before {
   content: '';
@@ -705,27 +681,43 @@ img { max-width: 100%; display: block; }
 }
 
 /* Letter-by-letter reveal — each letter is wrapped in a span by JS.
-   The entry animation is layered:
-     1. A vertical drop + spin from below (chIn).
-     2. After the entry settles, a subtle infinite breathing keeps the title alive.
-     3. Stagger across letters gives a "wave" arrival. */
-.hero-title .ch {
+   Combines:
+     • Gold gradient + traveling shimmer
+     • Entry: drop + rotate + scale with overshoot
+     • Continuous breathing (subtle scale/rotate sway)
+     • Stagger across letters for a wave arrival */
+.hero-title-text .ch {
   display: inline-block;
+  background-image: linear-gradient(
+    100deg,
+    var(--gold-soft) 0%,
+    var(--gold-soft) 30%,
+    #fff4d6 48%,
+    #ffe9a8 52%,
+    var(--gold-soft) 70%,
+    var(--gold-soft) 100%
+  );
+  background-size: 260% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   opacity: 0;
   transform: translateY(1.1em) rotate(8deg) scale(0.85);
   animation:
-    chIn 1.2s cubic-bezier(.22,.9,.18,1) both,
-    chBreath 4s ease-in-out infinite;
+    chIn     1.2s cubic-bezier(.22,.9,.18,1) both,
+    chBreath 4s ease-in-out infinite,
+    titleShimmer 4s ease-in-out infinite;
   transition: transform 0.4s cubic-bezier(.2,.7,.2,1), -webkit-text-fill-color 0.4s ease;
-  will-change: transform, opacity;
+  will-change: transform, opacity, background-position;
 }
-.hero-title .ch:nth-child(1) { animation-delay: 0.10s, 2.0s; }
-.hero-title .ch:nth-child(2) { animation-delay: 0.22s, 2.1s; }
-.hero-title .ch:nth-child(3) { animation-delay: 0.34s, 2.2s; }
-.hero-title .ch:nth-child(4) { animation-delay: 0.46s, 2.3s; }
-.hero-title .ch:nth-child(5) { animation-delay: 0.58s, 2.4s; }
-.hero-title .ch:nth-child(6) { animation-delay: 0.70s, 2.5s; }
-.hero-title .ch:nth-child(7) { animation-delay: 0.82s, 2.6s; }
+.hero-title-text .ch:nth-child(1) { animation-delay: 0.10s, 2.0s, 2.6s; }
+.hero-title-text .ch:nth-child(2) { animation-delay: 0.22s, 2.1s, 2.7s; }
+.hero-title-text .ch:nth-child(3) { animation-delay: 0.34s, 2.2s, 2.8s; }
+.hero-title-text .ch:nth-child(4) { animation-delay: 0.46s, 2.3s, 2.9s; }
+.hero-title-text .ch:nth-child(5) { animation-delay: 0.58s, 2.4s, 3.0s; }
+.hero-title-text .ch:nth-child(6) { animation-delay: 0.70s, 2.5s, 3.1s; }
+.hero-title-text .ch:nth-child(7) { animation-delay: 0.82s, 2.6s, 3.2s; }
 
 @keyframes chIn {
   0%   { opacity: 0; transform: translateY(1.1em) rotate(8deg) scale(0.85); filter: blur(10px); }
@@ -740,16 +732,23 @@ img { max-width: 100%; display: block; }
   50%      { transform: translateY(-0.04em) rotate(0.6deg) scale(1.012); }
 }
 
+/* Travel the gold shimmer across the gradient */
+@keyframes titleShimmer {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
 /* Hover a letter → ripples the row (neighbors tilt opposite ways) */
-.hero-title .ch:hover {
+.hero-title-text .ch:hover {
   transform: translateY(-0.22em) rotate(-4deg) scale(1.06);
   -webkit-text-fill-color: #fff4d6;
   animation: chHoverPulse 0.6s ease-out;
 }
-.hero-title .ch:hover + .ch {
+.hero-title-text .ch:hover + .ch {
   transform: translateY(0.06em) rotate(3deg);
 }
-.hero-title .ch:has(+ .ch:hover) {
+.hero-title-text .ch:has(+ .ch:hover) {
   transform: translateY(0.06em) rotate(-3deg);
 }
 @keyframes chHoverPulse {
